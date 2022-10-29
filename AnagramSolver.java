@@ -12,7 +12,6 @@
  */
 
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class AnagramSolver {
@@ -68,7 +67,6 @@ public class AnagramSolver {
 
     }
 
-
     private ArrayList<List<String>> recursionHelper(String currentWord, int maxWords,
                                                     LetterInventory lettersLeft,
                                                     ArrayList<String> reducedDict,
@@ -78,54 +76,36 @@ public class AnagramSolver {
         if (lettersLeft.isEmpty()) {
             if(!currentAnagrams.contains(anagrams)) {
                 currentAnagrams.add(new ArrayList<>(anagrams));
-                //reducedDict.remove(currentWord);
             }
-            //System.out.println("Anagrams is " + anagrams);
-            //System.out.println("current anagrams is " + currentAnagrams);
-
-/*            if(anagrams.size() <= maxWords) {
-                anagrams.remove(currentWord);
-                lettersLeft = lettersLeft.add(wordInventories.get(currentWord));
-            }*/
-            //System.out.println("New letters left " + lettersLeft);
         }
 
         for (int i = 0; i < reducedDict.size(); i++) {
             currentWord = reducedDict.get(i);
             //okay to add word
             if (lettersLeft.subtract(wordInventories.get(currentWord)) != null) {
-                //add word to current anagram
-
-                //System.out.println("Letters left" + lettersLeft);
-                anagrams.add(reducedDict.get(i));
-                lettersLeft = lettersLeft.subtract(wordInventories.get(reducedDict.get(i)));
-                //System.out.println("Letters left after sub " + lettersLeft + " word " +
-                 //currentWord);
-
                 ArrayList<String> newDict = reducedDict;
 
+                //add word to current anagrams
+                anagrams.add(reducedDict.get(i));
+                LetterInventory LICopy = lettersLeft.subtract(wordInventories.get(reducedDict.get(i)));
+                if(anagrams.size() > maxWords) {
+                    newDict.remove(currentWord);
+                }
+
                 //call again with new letters left
-                recursionHelper(currentWord, maxWords, lettersLeft, newDict,
+                recursionHelper(currentWord, maxWords, LICopy, newDict,
                         anagrams, currentAnagrams);
-                //lettersLeft = lettersLeft.add(wordInventories.get(currentWord));
 
-                //remove word
-                lettersLeft = lettersLeft.add(wordInventories.get(currentWord));
+                //undo for recursive backtracking
                 anagrams.remove(currentWord);
-                //newDict.remove(currentWord);
-                //System.out.println("anagrams is " + anagrams + " current word is " + currentWord);
-
             }
-
         }
-
         currentAnagrams.sort(new AnagramComparator());
         return currentAnagrams;
     }
 
     private static class AnagramComparator implements Comparator<List<String>> {
         public int compare(List<String> a1, List<String> a2) {
-            // code for compare
             if(a1.size() != a2.size()){
                 return a1.size() - a2.size();
             }
@@ -137,5 +117,5 @@ public class AnagramSolver {
             }
             return 0;
         }
-    } // end of AnagramComparator
+    }
 }
